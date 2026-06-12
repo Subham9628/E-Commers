@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<section>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Login to ShopSphere</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="username" name="username" 
+                                       placeholder="Enter your email" required autofocus>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Enter your password" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me">
+                            <label class="form-check-label" for="remember-me">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <a th:href="@{/forgot-password}" class="text-decoration-none">Forgot Password?</a>
+                    </div>
+                    <div class="text-center mt-3">
+                        <span>Don't have an account? </span>
+                        <a th:href="@{/register}" class="text-decoration-none fw-bold">Create Account</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Demo Credentials Info -->
+            <div class="alert alert-info mt-4">
+                <h6><i class="fas fa-info-circle"></i> Demo Credentials:</h6>
+                <p class="mb-0 small">Email: user@example.com<br>Password: password123<br>
+                <span class="text-muted">(Create an account first or use any email/password for demo)</span></p>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

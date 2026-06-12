@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html th:replace="~{layouts/base :: base(content=~{::section})}"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home </title>
+	
+</head>
+
+<body>
+	
+<section>	
+    <!-- Hero Banner -->
+    <div class="hero-section text-white text-center py-5 rounded-4 mb-5">
+        <div class="container">
+            <h1 class="display-4">Welcome to ShopSphere </h1>
+            <p class="lead">Discover amazing products at unbeatable prices!</p>
+            <a th:href="@{/products}" class="btn btn-light btn-lg px-4">Shop Now</a>
+        </div>
+    </div>
+
+    <!-- Featured Products Section -->
+    <div class="mb-5">
+        <h2 class="text-center mb-4">Featured Products</h2>
+        <div class="row" id="featuredProducts">
+            <div class="col-md-3 mb-4" th:each="product : ${featuredProducts}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-box fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title" th:text="${product.name}">Sample Product</h5>
+                        <p class="card-text text-muted" th:text="${product.shortDescription}">Description</p>
+                        <h4 class="text-primary">$<span th:text="${product.price}">99.99</span></h4>
+                        <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Fallback content if no products -->
+            <div th:if="${#lists.isEmpty(featuredProducts)}" class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> No featured products available. Add some products from admin panel.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="mb-5">
+        <h2 class="text-center mb-4">Shop by Category</h2>
+        <div class="row" id="categories">
+            <div class="col-md-3 mb-4" th:each="category : ${categories}">
+                <div class="card text-center h-100 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-tag fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title" th:text="${category.name}">Category</h5>
+                        <a th:href="@{/products(category=${category.id})}" class="btn btn-outline-primary">Browse</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter Section -->
+    <div class="bg-light p-5 rounded-4 text-center">
+        <h3>Subscribe to Our Newsletter</h3>
+        <p>Get the latest updates on new products and special offers!</p>
+        <form class="row g-3 justify-content-center" method="post" th:action="@{/subscribe}">
+            <div class="col-auto">
+                <input type="email" name="email" class="form-control form-control-lg" placeholder="Your email address" required>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-lg">Subscribe</button>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>
