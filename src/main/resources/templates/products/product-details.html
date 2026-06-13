@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopSphere - <span th:text="${product.name}">Product</span></title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+        .navbar-brand { font-size: 1.8rem; font-weight: bold; color: white !important; }
+        .nav-link { color: white !important; }
+        .product-image { background: white; border-radius: 20px; padding: 40px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .product-image i { font-size: 150px; color: #667eea; }
+        .product-details { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .product-price { font-size: 2rem; font-weight: bold; color: #28a745; }
+        .quantity-input { width: 80px; text-align: center; margin: 0 10px; }
+        .btn-add-to-cart { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 30px; padding: 12px; width: 100%; }
+        footer { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: white; margin-top: 50px; padding: 30px 0; }
+        
+        /* Toast Notification Styles */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}"><i class="fas fa-store"></i> ShopSphere</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}">Products</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/cart}">Cart</a></li>
+                
+				<!-- Show when NOT logged in -->
+				<li class="nav-item" sec:authorize="isAnonymous()">
+				    <a class="nav-link" th:href="@{/login}">Login</a>
+				</li>
+				<li class="nav-item" sec:authorize="isAnonymous()">
+				    <a class="nav-link" th:href="@{/register}">Register</a>
+				</li>
+
+				<!-- Show when logged in -->
+				<li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+				    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+				        <i class="fas fa-user"></i> <span sec:authentication="name">User</span>
+				    </a>
+				    <ul class="dropdown-menu">
+				        <li><a class="dropdown-item" th:href="@{/profile}">My Profile</a></li>
+				        <li><a class="dropdown-item" th:href="@{/orders}">My Orders</a></li>
+				        <li><hr class="dropdown-divider"></li>
+				        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>  <!-- Logout is HERE -->
+				    </ul>
+				</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Success Message from Server (After Page Reload) -->
+<div th:if="${success}" class="alert alert-success alert-dismissible fade show m-3" role="alert" style="position: fixed; top: 70px; right: 20px; z-index: 9999; min-width: 300px;">
+    <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<!-- Error Message from Server -->
+<div th:if="${error}" class="alert alert-danger alert-dismissible fade show m-3" role="alert" style="position: fixed; top: 70px; right: 20px; z-index: 9999; min-width: 300px;">
+    <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+
+<!-- Product Detail -->
+<div class="container my-5">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+            <div class="product-image">
+                <i class="fas" th:classappend="${product.icon}"></i>
+            </div>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="col-md-6 mb-4">
+            <div class="product-details">
+                <h2 class="mb-3" th:text="${product.name}">Product Name</h2>
+                
+                <div class="mb-2">
+                    <span class="rating text-warning">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </span>
+                    <span class="text-muted ms-2" th:text="'(' + ${product.reviews} + ' reviews)'">(0 reviews)</span>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="product-price">$<span th:text="${product.price}">0.00</span></span>
+                    <span class="text-muted text-decoration-line-through ms-2">$<span th:text="${product.oldPrice}">0.00</span></span>
+                    <span class="badge bg-success ms-2" th:text="'Save $' + (${product.oldPrice} - ${product.price})">Save $0</span>
+                </div>
+                
+                <div class="mb-3">
+                    <span th:if="${product.inStock}" class="badge bg-success">In Stock</span>
+                    <span th:unless="${product.inStock}" class="badge bg-danger">Out of Stock</span>
+                    <span class="badge bg-primary ms-2">Free Shipping</span>
+                </div>
+                
+                <p class="text-muted" th:text="${product.description}">Product description</p>
+                
+                <hr>
+                
+                <div class="mb-3">
+                    <div><strong>Brand:</strong> <span th:text="${product.brand}">Brand</span></div>
+                    <div><strong>SKU:</strong> <span th:text="${product.sku}">SKU</span></div>
+                    <div><strong>Color:</strong> <span th:text="${product.color}">Color</span></div>
+                    <div><strong>Warranty:</strong> <span th:text="${product.warranty}">Warranty</span></div>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Quantity:</label>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-secondary" id="decreaseBtn">-</button>
+                        <input type="number" id="quantity" class="quantity-input form-control" value="1" min="1" max="10">
+                        <button class="btn btn-outline-secondary" id="increaseBtn">+</button>
+                    </div>
+                </div>
+                
+                <form th:action="@{/cart/add}" method="post" id="addToCartForm">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <input type="hidden" name="productName" th:value="${product.name}">
+                    <input type="hidden" name="price" th:value="${product.price}">
+                    <input type="hidden" name="quantity" id="quantityInput" value="1">
+                    <button type="submit" class="btn-add-to-cart" th:disabled="${!product.inStock}" id="addToCartBtn">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container text-center">
+        <p>&copy; 2024 ShopSphere. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Quantity selector
+    let quantityInput = document.getElementById('quantity');
+    let hiddenQuantity = document.getElementById('quantityInput');
+    
+    document.getElementById('increaseBtn').onclick = function() {
+        let val = parseInt(quantityInput.value);
+        if (val < 10) {
+            quantityInput.value = val + 1;
+            hiddenQuantity.value = val + 1;
+        }
+    };
+    
+    document.getElementById('decreaseBtn').onclick = function() {
+        let val = parseInt(quantityInput.value);
+        if (val > 1) {
+            quantityInput.value = val - 1;
+            hiddenQuantity.value = val - 1;
+        }
+    };
+    
+    quantityInput.onchange = function() {
+        hiddenQuantity.value = this.value;
+    };
+    
+    // Update cart count in navigation
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        let cartCountSpan = document.getElementById('cartCount');
+        if (cartCountSpan) {
+            cartCountSpan.innerText = totalItems;
+        }
+    }
+    
+    // Show toast notification (without page reload)
+    function showToast(message, type) {
+        let bgColor = type === 'success' ? '#28a745' : '#dc3545';
+        let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
+        let toast = $(`
+            <div class="toast-notification" style="position: fixed; top: 80px; right: 20px; z-index: 9999;">
+                <div class="toast show" role="alert" style="background: ${bgColor}; color: white; border-radius: 10px; min-width: 300px;">
+                    <div class="toast-header" style="background: ${bgColor}; color: white; border-bottom: none;">
+                        <i class="fas ${icon} me-2"></i>
+                        <strong class="me-auto">ShopSphere</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `);
+        
+        $('body').append(toast);
+        
+        setTimeout(function() {
+            toast.fadeOut(500, function() {
+                $(this).remove();
+            });
+        }, 3000);
+    }
+    
+    // AJAX form submission (show message without page reload)
+    $('#addToCartForm').on('submit', function(e) {
+        e.preventDefault(); // Prevent page reload
+        
+        let formData = $(this).serialize();
+        let productName = $('input[name="productName"]').val();
+        let quantity = $('input[name="quantity"]').val();
+        
+        $.ajax({
+            url: '/cart/add',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                // Show success toast
+                showToast(productName + ' added to cart! (Quantity: ' + quantity + ')', 'success');
+                
+                // Update cart count
+                updateCartCount();
+                
+                // Also update the form to use AJAX for future submissions
+                console.log('Item added to cart successfully');
+            },
+            error: function(xhr) {
+                showToast('Failed to add item to cart', 'error');
+                console.log('Error:', xhr);
+            }
+        });
+    });
+    
+    // Load cart count on page load
+    updateCartCount();
+</script>
+
+</body>
+</html>

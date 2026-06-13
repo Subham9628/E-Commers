@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopSphere - Shopping Cart</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Complete CSS for Cart Page -->
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Navigation Bar Styles */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: #ffd700 !important;
+        }
+        
+        /* Cart Container */
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        /* Cart Table */
+        .cart-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        
+        .cart-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+        
+        .cart-table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        
+        .cart-item {
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        /* Product Image */
+        .product-img {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        /* Quantity Controls */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .quantity-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            margin: 0 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 8px;
+        }
+        
+        /* Remove Button */
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+        
+        /* Cart Summary */
+        .cart-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .summary-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        /* Buttons */
+        .btn-checkout {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+			margin-right:20px;
+            padding: 12px;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-continue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+			margin-left:20%;
+            padding: 12px;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-continue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .empty-cart i {
+            font-size: 80px;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .empty-cart h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            margin-top: 50px;
+            padding: 40px 0 20px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .cart-table, .cart-summary {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cart-container {
+                padding: 10px;
+            }
+            .cart-table {
+                font-size: 12px;
+            }
+            .quantity-input {
+                width: 45px;
+            }
+            .cart-table th, .cart-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-store"></i> ShopSphere
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/products}">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                    </a>
+                </li>
+                
+                <!-- ===== LOGIN/REGISTER - Visible ONLY when NOT logged in ===== -->
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a class="nav-link" th:href="@{/login}">Login</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAnonymous()">
+                    <a class="nav-link" th:href="@{/register}">Register</a>
+                </li>
+                
+                <!-- ===== USER MENU - Visible ONLY when logged in ===== -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> <span sec:authentication="name"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/profile}">
+                            <i class="fas fa-id-card"></i> My Profile
+                        </a></li>
+                        <li><a class="dropdown-item" th:href="@{/orders}">
+                            <i class="fas fa-shopping-bag"></i> My Orders
+                        </a></li>
+                        <li><a class="dropdown-item" th:href="@{/wishlist}">
+                            <i class="fas fa-heart"></i> Wishlist
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/logout}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Cart Content -->
+<div class="cart-container">
+    <h2 class="text-center mb-4">
+        <i class="fas fa-shopping-cart text-primary"></i> Your Shopping Cart
+    </h2>
+    
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <!-- Cart Items -->
+    <div th:if="${cart != null and not cart.items.isEmpty()}">
+        <div class="row">
+            <div class="col-md-8">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${cart.items}" class="cart-item">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="product-img me-3">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <div>
+                                        <strong th:text="${item.productName}">Product Name</strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>$<span th:text="${item.price}">0.00</span></td>
+                            <td>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateQuantity(this, -1)">-</button>
+                                    <input type="number" class="quantity-input" th:value="${item.quantity}" min="1" readonly>
+                                    <button class="quantity-btn" onclick="updateQuantity(this, 1)">+</button>
+                                </div>
+                            </td>
+                            <td>$<span th:text="${item.price * item.quantity}">0.00</span></td>
+                            <td>
+                                <button class="remove-btn" onclick="removeItem(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="cart-summary">
+                    <div class="summary-title">Order Summary</div>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>$<span id="subtotal">0.00</span></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>$10.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (10%):</span>
+                        <span>$<span id="tax">0.00</span></span>
+                    </div>
+                    <hr>
+                    <div class="summary-row summary-total">
+                        <span>Total:</span>
+                        <span>$<span id="total">0.00</span></span>
+                    </div>
+                    
+                    <button class="btn-checkout" onclick="checkout()">
+                        <i class="fas fa-credit-card"></i> Proceed to Checkout
+                    </button>
+                    
+                    <a href="/products" class="btn-continue">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Empty Cart -->
+    <div th:if="${cart == null or cart.items.isEmpty()}" class="empty-cart">
+        <i class="fas fa-shopping-cart"></i>
+        <h4>Your cart is empty</h4>
+        <p>Looks like you haven't added any items to your cart yet.</p>
+        <a href="/products" class="btn-checkout" style="width: auto; padding: 10px 30px;">
+            <i class="fas fa-shopping-cart"></i> Start Shopping
+        </a>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container text-center">
+        <p>&copy; 2024 ShopSphere. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function updateTotals() {
+        let subtotal = 0;
+        $('.cart-item').each(function() {
+            let price = parseFloat($(this).find('td:eq(1)').text().replace('$', ''));
+            let quantity = parseInt($(this).find('.quantity-input').val());
+            let itemTotal = price * quantity;
+            $(this).find('td:eq(3)').text('$' + itemTotal.toFixed(2));
+            subtotal += itemTotal;
+        });
+        
+        let tax = subtotal * 0.10;
+        let total = subtotal + 10 + tax;
+        
+        $('#subtotal').text(subtotal.toFixed(2));
+        $('#tax').text(tax.toFixed(2));
+        $('#total').text(total.toFixed(2));
+    }
+    
+    function updateQuantity(btn, change) {
+        let input = $(btn).siblings('.quantity-input');
+        let newVal = parseInt(input.val()) + change;
+        if (newVal >= 1 && newVal <= 10) {
+            input.val(newVal);
+            updateTotals();
+        }
+    }
+    
+    function removeItem(btn) {
+        $(btn).closest('.cart-item').remove();
+        updateTotals();
+        if ($('.cart-item').length === 0) {
+            location.reload();
+        }
+    }
+    
+    function checkout() {
+        if ($('.cart-item').length === 0) {
+            alert('Your cart is empty');
+        } else {
+            window.location.href = '/checkout';
+        }
+    }
+    
+    $(document).ready(function() {
+        updateTotals();
+    });
+</script>
+
+</body>
+</html>
