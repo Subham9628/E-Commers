@@ -1,8 +1,14 @@
 package com.shopsphere.controller;
 
 import com.shopsphere.entity.User;
+import com.shopsphere.repository.UserRepository;
+import com.shopsphere.services.CartService;
 import com.shopsphere.services.UserService;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +21,12 @@ public class AuthController {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private CartService cartService;
+    
     
     @GetMapping("/login")
     public String login(@RequestParam(value ="error", required = false) String error,
@@ -31,6 +43,21 @@ public class AuthController {
         
         return "auth/login";
     }
+    // Merge guest cart when user logs in
+    
+    @PostMapping("/login")
+    public String loginProcess(HttpSession session, Authentication authentication) {
+        // Force merge on manual login
+        if (authentication != null && authentication.isAuthenticated()) {
+            String sessionId = session.getId();
+            User user = userRepository.findByEmail(authentication.getName()).orElse(null);
+            if (user != null) {
+                cartService.mergeGuestCart(sessionId, user);
+            }
+        }
+        return "redirect:/";
+    }
+  
     
     @GetMapping("/register")
     public String showRegisterForm(Model model) {

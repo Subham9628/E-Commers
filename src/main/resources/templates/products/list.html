@@ -101,6 +101,7 @@
 <body>
 
 <!-- Navigation -->
+<!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" th:href="@{/}">
@@ -115,13 +116,13 @@
                     <a class="nav-link" th:href="@{/}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/products}">Products</a>
+                    <a class="nav-link" th:href="@{/products}">Products</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/cart}">Cart</a>
                 </li>
                 
-                <!-- NON-LOGGED IN USERS -->
+                <!-- Show for NON-logged in users -->
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="nav-link" th:href="@{/login}">Login</a>
                 </li>
@@ -129,16 +130,28 @@
                     <a class="nav-link" th:href="@{/register}">Register</a>
                 </li>
                 
-                <!-- LOGGED IN USERS -->
+                <!-- Show for LOGGED in users -->
                 <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-user"></i> <span sec:authentication="name"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:href="@{/profile}">My Profile</a></li>
-                        <li><a class="dropdown-item" th:href="@{/orders}">My Orders</a></li>
+                        <li><a class="dropdown-item" th:href="@{/profile}">
+                            <i class="fas fa-id-card"></i> My Profile
+                        </a></li>
+                        <li><a class="dropdown-item" th:href="@{/orders}">
+                            <i class="fas fa-shopping-bag"></i> My Orders
+                        </a></li>
+						<li>
+						                            <a class="dropdown-item" th:href="@{/wishlist}">
+						                                <i class="fas fa-heart"></i> Wishlist
+						                            </a>
+						                        </li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                        <!-- LOGOUT BUTTON - Add this line -->
+                        <li><a class="dropdown-item" th:href="@{/logout}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a></li>
                     </ul>
                 </li>
             </ul>
@@ -191,103 +204,126 @@
         </div>
     </div>
     
-    <!-- Products Grid -->
-    <h3 class="text-center mb-4">All Products</h3>
-    <div class="row" id="productsGrid">
-        <!-- Product 1 -->
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-headphones fa-4x text-primary mb-3"></i>
-                    <h5 class="card-title">Premium Headphones</h5>
-                    <p class="card-text text-muted">Noise-cancelling, 30hr battery</p>
-                    <div class="mb-2">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star-half-alt text-warning"></i>
-                        <span class="text-muted">(128)</span>
-                    </div>
-                    <div class="product-price">$99.99</div>
-                    <button class="btn btn-primary w-100 mt-3" onclick="addToCart(1, 'Premium Headphones', 99.99)">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Product 2 -->
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-clock fa-4x text-primary mb-3"></i>
-                    <h5 class="card-title">Smart Watch Pro</h5>
-                    <p class="card-text text-muted">Fitness tracking, GPS</p>
-                    <div class="mb-2">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <span class="text-muted">(256)</span>
-                    </div>
-                    <div class="product-price">$199.99</div>
-                    <button class="btn btn-primary w-100 mt-3" onclick="addToCart(2, 'Smart Watch Pro', 199.99)">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Product 3 -->
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-camera fa-4x text-primary mb-3"></i>
-                    <h5 class="card-title">4K Action Camera</h5>
-                    <p class="card-text text-muted">Waterproof, Wi-Fi</p>
-                    <div class="mb-2">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="far fa-star text-warning"></i>
-                        <span class="text-muted">(89)</span>
-                    </div>
-                    <div class="product-price">$299.99</div>
-                    <button class="btn btn-primary w-100 mt-3" onclick="addToCart(3, '4K Action Camera', 299.99)">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Product 4 -->
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-bag fa-4x text-primary mb-3"></i>
-                    <h5 class="card-title">Laptop Backpack</h5>
-                    <p class="card-text text-muted">Water-resistant, 15.6 inch</p>
-                    <div class="mb-2">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star-half-alt text-warning"></i>
-                        <span class="text-muted">(312)</span>
-                    </div>
-                    <div class="product-price">$49.99</div>
-                    <button class="btn btn-primary w-100 mt-3" onclick="addToCart(4, 'Laptop Backpack', 49.99)">
-                        <i class="fas fa-shopping-cart"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+	<!-- Products Grid -->
+	<h3 class="text-center mb-4">All Products</h3>
+	<div class="row" id="productsGrid">
+	    
+	    <!-- Product 1 - Premium Headphones -->
+	    <div class="col-md-3 mb-4">
+	        <div class="card h-100">
+	            <div class="card-body text-center">
+	                <i class="fas fa-headphones fa-4x text-primary mb-3"></i>
+	                <h5 class="card-title">Premium Headphones</h5>
+	                <p class="card-text text-muted">Noise-cancelling, 30hr battery</p>
+	                <div class="mb-2">
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star-half-alt text-warning"></i>
+	                    <span class="text-muted">(128)</span>
+	                </div>
+	                <div class="product-price">$99.99</div>
+	                <form th:action="@{/cart/add}" method="post" class="mt-3">
+	                    <input type="hidden" name="productId" value="1">
+	                    <input type="hidden" name="productName" value="Premium Headphones">
+	                    <input type="hidden" name="price" value="99.99">
+	                    <input type="hidden" name="quantity" value="1">
+	                    <button type="submit" class="btn btn-primary w-100">
+	                        <i class="fas fa-shopping-cart"></i> Add to Cart
+	                    </button>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <!-- Product 2 - Smart Watch Pro -->
+	    <div class="col-md-3 mb-4">
+	        <div class="card h-100">
+	            <div class="card-body text-center">
+	                <i class="fas fa-clock fa-4x text-primary mb-3"></i>
+	                <h5 class="card-title">Smart Watch Pro</h5>
+	                <p class="card-text text-muted">Fitness tracking, GPS</p>
+	                <div class="mb-2">
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <span class="text-muted">(256)</span>
+	                </div>
+	                <div class="product-price">$199.99</div>
+	                <form th:action="@{/cart/add}" method="post" class="mt-3">
+	                    <input type="hidden" name="productId" value="2">
+	                    <input type="hidden" name="productName" value="Smart Watch Pro">
+	                    <input type="hidden" name="price" value="199.99">
+	                    <input type="hidden" name="quantity" value="1">
+	                    <button type="submit" class="btn btn-primary w-100">
+	                        <i class="fas fa-shopping-cart"></i> Add to Cart
+	                    </button>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <!-- Product 3 - 4K Action Camera -->
+	    <div class="col-md-3 mb-4">
+	        <div class="card h-100">
+	            <div class="card-body text-center">
+	                <i class="fas fa-camera fa-4x text-primary mb-3"></i>
+	                <h5 class="card-title">4K Action Camera</h5>
+	                <p class="card-text text-muted">Waterproof, Wi-Fi</p>
+	                <div class="mb-2">
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="far fa-star text-warning"></i>
+	                    <span class="text-muted">(89)</span>
+	                </div>
+	                <div class="product-price">$299.99</div>
+	                <form th:action="@{/cart/add}" method="post" class="mt-3">
+	                    <input type="hidden" name="productId" value="3">
+	                    <input type="hidden" name="productName" value="4K Action Camera">
+	                    <input type="hidden" name="price" value="299.99">
+	                    <input type="hidden" name="quantity" value="1">
+	                    <button type="submit" class="btn btn-primary w-100">
+	                        <i class="fas fa-shopping-cart"></i> Add to Cart
+	                    </button>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	    
+	    <!-- Product 4 - Laptop Backpack -->
+	    <div class="col-md-3 mb-4">
+	        <div class="card h-100">
+	            <div class="card-body text-center">
+	                <i class="fas fa-bag fa-4x text-primary mb-3"></i>
+	                <h5 class="card-title">Laptop Backpack</h5>
+	                <p class="card-text text-muted">Water-resistant, 15.6 inch</p>
+	                <div class="mb-2">
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star text-warning"></i>
+	                    <i class="fas fa-star-half-alt text-warning"></i>
+	                    
+	                </div>
+	                <div class="product-price">$49.99</div>
+	                <form th:action="@{/cart/add}" method="post" class="mt-3">
+	                    <input type="hidden" name="productId" value="4">
+	                    <input type="hidden" name="productName" value="Laptop Backpack">
+	                    <input type="hidden" name="price" value="49.99">
+	                    <input type="hidden" name="quantity" value="1">
+	                    <button type="submit" class="btn btn-primary w-100">
+	                        <i class="fas fa-shopping-cart"></i> Add to Cart
+	                    </button>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	</div>
 <!-- Footer -->
 <footer>
     <div class="container">
@@ -319,40 +355,45 @@
         </div>
     </div>
 </footer>
+<!-- ========== BOOTSTRAP JAVASCRIPT - REQUIRED FOR DROPDOWN ========== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- ========== INITIALIZE DROPDOWNS ========== -->
 <script>
-    // Get cart from localStorage or initialize empty array
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    // Method 1: Auto-initialize all dropdowns
+    document.addEventListener('DOMContentLoaded', function() {
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        var dropdownList = dropdownElementList.map(function(dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+        });
+        console.log('✅ Dropdowns initialized');
+    });
     
-    // Update cart count display
-    function updateCartCount() {
-        let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        document.getElementById('cartCount').innerText = totalItems;
-    }
-    
-    // Add product to cart
-    function addToCart(id, name, price) {
-        let existingItem = cart.find(item => item.id === id);
-        
-        if (existingItem) {
-            existingItem.quantity++;
-        } else {
-            cart.push({
-                id: id,
-                name: name,
-                price: price,
-                quantity: 1
-            });
+    // Method 2: Simple fallback - show on click
+    document.addEventListener('click', function(e) {
+        var dropdownToggle = e.target.closest('.dropdown-toggle');
+        if (dropdownToggle) {
+            var dropdownMenu = dropdownToggle.nextElementSibling;
+            if (dropdownMenu && dropdownMenu.classList.contains('dropdown-menu')) {
+                var isOpen = dropdownMenu.classList.contains('show');
+                // Close other dropdowns
+                document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+                    if (menu !== dropdownMenu) {
+                        menu.classList.remove('show');
+                    }
+                });
+                // Toggle this dropdown
+                if (isOpen) {
+                    dropdownMenu.classList.remove('show');
+                } else {
+                    dropdownMenu.classList.add('show');
+                }
+            }
         }
-        
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartCount();
-        alert(name + ' added to cart!');
-    }
-    
-    // Initialize cart count on page load
-    updateCartCount();
+    });
 </script>
+
+
 
 </body>
 </html>

@@ -43,7 +43,6 @@ public class CartItem {
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
     
-    // Helper method
     public Double getSubtotal() {
         return price * quantity;
     }

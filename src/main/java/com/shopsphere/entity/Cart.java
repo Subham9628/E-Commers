@@ -1,6 +1,6 @@
 package com.shopsphere.entity;
-import jakarta.persistence.*;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,9 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     
     @Column(name = "session_id")
     private String sessionId;
@@ -32,8 +33,8 @@ public class Cart {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
     
     public String getSessionId() { return sessionId; }
     public void setSessionId(String sessionId) { this.sessionId = sessionId; }
@@ -63,7 +64,7 @@ public class Cart {
         return items.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
     }
     
-    public int getItemCount() {
+    public int getTotalItems() {
         return items.stream().mapToInt(CartItem::getQuantity).sum();
     }
 }
